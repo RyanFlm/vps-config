@@ -37,8 +37,6 @@
   users.users.maximilian = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-    ];
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDK1m6EeZSN/Gl1OadAOqplMEHiC3+LbnbmlkWSti2dVNiuyDRA4no8ojAH2e2E7HooaFyxfKvLil4RJthNTuEUgp8FBlf01Oy/XU60rclbQTD92ioshtDP0BzWXocErpYKatEWJrX3YMloXa0x2TAGC+rrs9s52yy+Hmr/GJfaXl3lZWktl94NmfOsINnbd0hYzi7x2rdUVWDJXDoCbYPV3xYSbf2JYP9haxCHQy+u1HMtyGRiCJ4GUwj48oMjSoNEw6xHf8zdvFH7Nz8wtqHSUZOEsYGJe7y8rGu/H3U/KTbQZ3Lmk+5iUKpje13iVnxts47dFKyDHY4z1d5hrg9mU2vBgh72LlRjV6VvDEA53QpKSZtjSM/fWmWVRTVwvQJB9niGLuEqCrlGwWPfp34+7TexsmsMzpXMSXusu4Duqf1nFG1eFK6WCdx7xhAjSJlNRcM/oOUNB1xdN6G+UFOC0PE3UtJN147vUXylYc80nnrOngxdIgMe1N5qJy19tFk= maxim"
     ];
@@ -46,7 +44,7 @@
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim
     wget
   ];
 
@@ -58,7 +56,13 @@
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
+  # Enable git to manage config
+  programs.git = {
+    enable = true;
+    config = {
+      init.defaultBranch = "main";
+    };
+  };
 
   # Enable the OpenSSH daemon.
   services.openssh = {
@@ -67,6 +71,7 @@
     settings.PermitRootLogin = "no";
   };
 
+  # Enable and configure mailserver
   mailserver = {
     enable = true;
     fqdn = "mail.piontekfamily.de";
@@ -92,17 +97,10 @@
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "security@piontekfamily.de";
 
-  programs.git = {
-    enable = true;
-    config = {
-      init.defaultBranch = "main";
-    };
-  };
-
   # Open ports in the firewall.
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [22 80];
+    # allowedTCPPorts = [ ... ];
     # allowedUDPPorts = [ ... ];
   };
 
