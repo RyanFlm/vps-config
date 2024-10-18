@@ -16,21 +16,14 @@
 
   boot.loader.systemd-boot.enable = true;
   
-  
-  # networking.hostName = "nixos"; # Define your hostname.
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking = {
+    hostName = "vps";
+    domain = "piontekfamily.de";
+    networkmanager.enable = true;
+    firewall.enable = true;
+  };
 
-  # Set your time zone.
   time.timeZone = "Europe/Berlin";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "de";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -67,7 +60,7 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
-    settings.PasswordAuthentication = true;
+    settings.PasswordAuthentication = false;
     settings.PermitRootLogin = "no";
   };
 
@@ -97,12 +90,6 @@
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "security@piontekfamily.de";
 
-  # Open ports in the firewall.
-  networking.firewall = {
-    enable = true;
-    # allowedTCPPorts = [ ... ];
-    # allowedUDPPorts = [ ... ];
-  };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
