@@ -68,17 +68,36 @@
   mailserver = {
     enable = true;
     fqdn = "mail.piontekfamily.de";
-    domains = ["piontekfamily.de"];
+    domains = [
+      "piontekfamily.de"
+      "apelma.de"
+      "maximilian-apel.de"
+      "ryanfl.de"
+    ];
 
     # A list of all login accounts. To create the password hashes, use
     # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
     loginAccounts = {
       "info@piontekfamily.de" = {
-        hashedPasswordFile = "/run/keys/info-passwordhash";
+        hashedPasswordFile = "/run/keys/info-piontekfamily-passwordhash";
         aliases = [
           "postmaster@piontekfamily.de"
           "abuse@piontekfamily.de"
           "security@piontekfamily.de"
+        ];
+      };
+      "maximilian@piontekfamily.de" = {
+        hashedPasswordFile = "/run/keys/maximilian-piontekfamily-passwordhash";
+        aliasesRegexp = [
+          "/^maximilian\\..*@piontekfamily\\.de$/"
+        ];
+      };
+      "info@apelma.de" = {
+        hashedPasswordFile = "/run/keys/info-apelma-passwordhash";
+        aliases = [
+          "@apelma.de"
+          "@maximilian-apel.de"
+          "@ryanfl.de"
         ];
       };
     };
