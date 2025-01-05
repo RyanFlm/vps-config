@@ -15,6 +15,8 @@
     ];
 
   boot.loader.systemd-boot.enable = true;
+
+  nixpkgs.config.allowUnfree = true;
   
   networking = {
     hostName = "vps";
@@ -62,6 +64,11 @@
     enable = true;
     settings.PasswordAuthentication = false;
     settings.PermitRootLogin = "no";
+  };
+
+  services.plex = {
+    enable = true;
+    openFirewall = true;
   };
 
   # Enable and configure mailserver
