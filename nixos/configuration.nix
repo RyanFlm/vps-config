@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       (builtins.fetchTarball {
         url = "https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/-/archive/nixos-24.05/nixos-mailserver-nixos-24.05.tar.gz";
-        sha256 = "0clvw4622mqzk1aqw1qn6shl9pai097q62mq1ibzscnjayhp278b";
+        sha256 = "08zdidja5kdqgskynxsmcd8skh1b7cfl9ijjy9pak4b5h3aw2iqv";
       })
     ];
 
