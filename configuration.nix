@@ -14,15 +14,54 @@
       })
     ];
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   boot.loader.systemd-boot.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  
+
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = "1";
+    "net.ipv6.conf.all.forwarding" = "1";
+  };
+
   networking = {
     hostName = "vps";
     domain = "piontekfamily.de";
     networkmanager.enable = true;
-    firewall.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 80 443 ];
+      allowedUDPPorts = [ 51820 ];
+    };
+    nat = {
+      enable = true;
+      enableIPv6 = true;
+      externalInterface = "ens3";
+      internalInterfaces = [ "wg0" ];
+    };
+    wireguard = {
+      enable = true;
+      interfaces = {
+        wg0 = {
+          ips = [ "10.100.0.1/24" ];
+          listenPort = 51820;
+          postSetup = ''
+            ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -j MASQUERADE
+          '';
+          postShutdown = ''
+            ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -j MASQUERADE
+          '';
+          privateKeyFile = "/run/keys/wireguard-private-key";
+          peers = [
+            {
+              publicKey = "w+O3T05yz6siEiELqKVmQnpQP9aRn7g4QxNEo5ClsFk=";
+              allowedIPs = [ "10.100.0.2/32" ];
+            }
+          ];
+        };
+      };
+    };
   };
 
   time.timeZone = "Europe/Berlin";
@@ -39,8 +78,10 @@
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
+    git
     vim
     wget
+    wireguard-tools
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -66,9 +107,28 @@
     settings.PermitRootLogin = "no";
   };
 
-  services.plex = {
+  services.nginx = {
     enable = true;
-    openFirewall = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+    virtualHosts = {
+      "plex.piontekfamily.de" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://10.100.0.2:32400";
+          proxyWebsockets = true;
+        };
+      };
+      "home.piontekfamily.de" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://10.100.0.2:8123";
+          proxyWebsockets = true;
+        };
+      };
+    };
   };
 
   # Enable and configure mailserver
@@ -107,6 +167,12 @@
           "@ryanfl.de"
         ];
       };
+      "automation@piontekfamily.de" = {
+        hashedPasswordFile = "/run/keys/automation-piontekfamily-passwordhash";
+        aliasesRegexp = [
+          "/^automation\\..*@piontekfamily\\.de$/"
+        ];
+      };
     };
 
     # Use Let's Encrypt certificates. Note that this needs to set up a stripped
@@ -115,7 +181,6 @@
   };
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "security@piontekfamily.de";
-
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
