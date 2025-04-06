@@ -130,61 +130,13 @@
     };
   };
 
-  # Enable and configure mailserver
-  mailserver = {
-    enable = true;
-    fqdn = "mail.piontekfamily.de";
-    domains = [
-      "piontekfamily.de"
-      "apelma.de"
-      "maximilian-apel.de"
-      "ryanfl.de"
-    ];
-
-    # A list of all login accounts. To create the password hashes, use
-    # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
-    loginAccounts = {
-      "info@piontekfamily.de" = {
-        hashedPasswordFile = "/run/keys/info-piontekfamily-passwordhash";
-        aliases = [
-          "postmaster@piontekfamily.de"
-          "abuse@piontekfamily.de"
-          "security@piontekfamily.de"
-        ];
-      };
-      "maximilian@piontekfamily.de" = {
-        hashedPasswordFile = "/run/keys/maximilian-piontekfamily-passwordhash";
-        aliasesRegexp = [
-          "/^maximilian\\..*@piontekfamily\\.de$/"
-        ];
-      };
-      "info@apelma.de" = {
-        hashedPasswordFile = "/run/keys/info-apelma-passwordhash";
-        aliases = [
-          "@apelma.de"
-          "@maximilian-apel.de"
-          "@ryanfl.de"
-        ];
-      };
-      "automation@piontekfamily.de" = {
-        hashedPasswordFile = "/run/keys/automation-piontekfamily-passwordhash";
-        aliasesRegexp = [
-          "/^automation\\..*@piontekfamily\\.de$/"
-        ];
-      };
-    };
-
-    # Use Let's Encrypt certificates. Note that this needs to set up a stripped
-    # down nginx and opens port 80.
-    certificateScheme = "acme-nginx";
-  };
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "security@piontekfamily.de";
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
+  #system.copySystemConfiguration = true;
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
