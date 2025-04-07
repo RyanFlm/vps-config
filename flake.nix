@@ -29,7 +29,6 @@
           simple-nixos-mailserver.nixosModule
           {
             mailserver = {
-              enable = true;
               fqdn = "mail.piontekfamily.de";
               domains = [
                 "piontekfamily.de"
