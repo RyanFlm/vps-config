@@ -3,7 +3,7 @@
 
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-  inputs.simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-24.05";
+  inputs.simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-24.11";
 
   outputs = { self, nixpkgs, simple-nixos-mailserver }:
   let
@@ -29,6 +29,7 @@
           simple-nixos-mailserver.nixosModule
           {
             mailserver = {
+              enable = true;
               fqdn = "mail.piontekfamily.de";
               domains = [
                 "piontekfamily.de"
