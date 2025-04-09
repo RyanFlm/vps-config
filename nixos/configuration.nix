@@ -2,10 +2,23 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
-  imports = [];
+  imports = [
+    inputs.sops-nix.nixosModules.sops
+    inputs.simple-nixos-mailserver.nixosModule
+  ];
+
+  sops.defaultSopsFile = ../secrets/secrets.yaml;
+  sops.defaultSopsFormat = "yaml";
+  sops.age.keyFile = "/home/maximilian/.config/sops/age/keys.txt";
+
+  sops.secrets."mailserver/users/automation-piontekfamily" = {};
+  sops.secrets."mailserver/users/info-apelma" = {};
+  sops.secrets."mailserver/users/info-piontekfamily" = {};
+  sops.secrets."mailserver/users/maximilian-piontekfamily" = {};
+  sops.secrets."wireguard/private-key" = {};
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -45,7 +58,7 @@
           postShutdown = ''
             ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -j MASQUERADE
           '';
-          privateKeyFile = "/run/keys/wireguard-private-key";
+          privateKeyFile = config.sops.secrets."wireguard/private-key".path;
           peers = [
             {
               publicKey = "w+O3T05yz6siEiELqKVmQnpQP9aRn7g4QxNEo5ClsFk=";
@@ -122,6 +135,54 @@
         };
       };
     };
+  };
+
+  mailserver = {
+    enable = true;
+    fqdn = "mail.piontekfamily.de";
+    domains = [
+      "piontekfamily.de"
+      "apelma.de"
+      "maximilian-apel.de"
+      "ryanfl.de"
+    ];
+
+    # A list of all login accounts. To create the password hashes, use
+    # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
+    loginAccounts = {
+      "info@piontekfamily.de" = {
+        hashedPasswordFile = config.sops.secrets."mailserver/users/info-piontekfamily".path;
+        aliases = [
+          "postmaster@piontekfamily.de"
+          "abuse@piontekfamily.de"
+          "security@piontekfamily.de"
+        ];
+      };
+      "maximilian@piontekfamily.de" = {
+        hashedPasswordFile = config.sops.secrets."mailserver/users/maximilian-piontekfamily".path;
+        aliasesRegexp = [
+          "/^maximilian\\..*@piontekfamily\\.de$/"
+        ];
+      };
+      "info@apelma.de" = {
+        hashedPasswordFile = config.sops.secrets."mailserver/users/info-apelma".path;
+        aliases = [
+          "@apelma.de"
+          "@maximilian-apel.de"
+          "@ryanfl.de"
+        ];
+      };
+      "automation@piontekfamily.de" = {
+        hashedPasswordFile = config.sops.secrets."mailserver/users/automation-piontekfamily".path;
+        aliasesRegexp = [
+          "/^automation\\..*@piontekfamily\\.de$/"
+        ];
+      };
+    };
+
+    # Use Let's Encrypt certificates. Note that this needs to set up a stripped
+    # down nginx and opens port 80.
+    certificateScheme = "acme-nginx";
   };
 
   security.acme.acceptTerms = true;
