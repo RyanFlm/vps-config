@@ -3,7 +3,7 @@
 
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-  inputs.simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-24.11";
+  inputs.simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
 
   outputs = { self, nixpkgs, simple-nixos-mailserver }:
   let
