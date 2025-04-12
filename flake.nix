@@ -6,7 +6,7 @@
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.nix-minecraft.url = "github:Infinidoge/nix-minecraft";
 
-  outputs = { self, nixpkgs, simple-nixos-mailserver, sops-nix, nix-minecraft }@inputs:
+  outputs = { self, nixpkgs, simple-nixos-mailserver, sops-nix }@inputs:
   let
     system = "x86_64-linux";
 
@@ -17,7 +17,6 @@
         allowUnfree = true;
       };
     };
-
   in
   {
     nixosConfigurations = {
@@ -28,12 +27,8 @@
         };
 
         modules = [
-          ./nixos/configuration.nix
-          ./nixos/hardware-configuration.nix
-          nix-minecraft.nixosModules.minecraft-servers
-          {
-            nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
-          }
+          ./hosts/vps/configuration.nix
+          ./modules/services/timetoplay-minecraft-server.nix
         ];
       };
     };
