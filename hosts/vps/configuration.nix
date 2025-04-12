@@ -39,7 +39,7 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [ 80 443 ];
-      allowedUDPPorts = [ 51820 24454 ];
+      allowedUDPPorts = [ 51820 ];
     };
     nat = {
       enable = true;

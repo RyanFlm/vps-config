@@ -1,12 +1,14 @@
 {
   description = "NixOS System configuration";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-  inputs.simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
-  inputs.sops-nix.url = "github:Mic92/sops-nix";
-  inputs.nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
+    sops-nix.url = "github:Mic92/sops-nix";
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+  };
 
-  outputs = { self, nixpkgs, simple-nixos-mailserver, sops-nix }@inputs:
+  outputs = { self, nixpkgs, ... }@inputs:
   let
     system = "x86_64-linux";
 
